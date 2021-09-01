@@ -9,10 +9,9 @@ class Knight < AbstractPiece
   def create_moves(rank_index, file_index)
     moves = []
     MOVE_SET.each do |move_set|
-      rank_offset = move_set[0]
-      file_offset = move_set[1]
-      new_position = [rank_index + rank_offset, 
-                      file_index + file_offset]
+      rank_offset = rank_index + move_set[0]
+      file_offset = file_index + move_set[1]
+      new_position = [rank_offset, file_offset]
       next if outside_of_board?(new_position)
       moves << create_move(new_position)
     end

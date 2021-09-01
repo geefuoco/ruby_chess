@@ -21,7 +21,7 @@ class AbstractPiece
     create_moves(rank_index, file_index)
   end
 
-  def create_moves(rank_offset, file_offset)
+  def create_moves(rank_index, file_index)
     raise ChessExceptions::BaseClassError
   end
 

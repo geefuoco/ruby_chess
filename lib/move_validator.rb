@@ -23,15 +23,18 @@ module MoveValidator
   end
 
   def has_piece?(new_position)
+    !outside_of_board?(new_position) &&
     self.board.position_occupied?(new_position)
   end
 
   def has_friendly_piece?(new_position)
+    !outside_of_board?(new_position) &&
     self.board.position_occupied?(new_position) &&
     self.board.get_piece(new_position).color == self.color
   end
 
   def has_enemy_piece?(new_position)
+    !outside_of_board?(new_position) &&
     self.board.position_occupied?(new_position) &&
     self.board.get_piece(new_position).color != self.color
   end
