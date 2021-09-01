@@ -16,6 +16,12 @@ class AbstractPiece
   end
 
   def get_legal_moves
+    rank_index = @position_coordinates[0]
+    file_index = @position_coordinates[1]
+    create_moves(rank_index, file_index)
+  end
+
+  def create_moves(rank_offset, file_offset)
     raise ChessExceptions::BaseClassError
   end
 

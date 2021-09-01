@@ -17,6 +17,10 @@ module MoveValidator
     return position_coordinates.any? { |el| el<0 || el>7 }
   end
 
+  def has_piece?(new_position)
+    self.board.position_occupied?(new_position)
+  end
+
   def has_friendly_piece?(new_position)
     self.board.position_occupied?(new_position) &&
     self.board.get_piece(new_position).color == self.color

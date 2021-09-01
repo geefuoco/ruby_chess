@@ -4,7 +4,7 @@ class CaptureMove < AbstractMove
 
   def initialize(goal_position, attacked_piece)
     super(goal_position)
-    @piece = piece
+    @piece = attacked_piece
   end
   
 
