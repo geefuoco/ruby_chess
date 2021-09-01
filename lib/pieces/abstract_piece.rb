@@ -4,7 +4,7 @@ class AbstractPiece
 
   include MoveValidator
 
-  attr_reader :color, :position_coordinates, :board
+  attr_reader :color, :position_coordinates, :board, :moved
 
   def initialize(color, position_coordinates, board)
     @color = color
@@ -23,6 +23,11 @@ class AbstractPiece
 
   def create_moves(rank_offset, file_offset)
     raise ChessExceptions::BaseClassError
+  end
+
+  def move(new_position)
+    @position_coordinates = new_position
+    @moved = true
   end
 
   def update

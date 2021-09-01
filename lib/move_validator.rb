@@ -5,13 +5,13 @@ module MoveValidator
 
   def create_move(new_position)
     case
+    when self.class == Pawn
+      return create_pawn_move(new_position)
     when has_enemy_piece?(new_position)
       attacked_piece = self.board.get_piece(new_position)
       return CaptureMove.new(new_position, attacked_piece)
     when normal_move?(new_position)
       return NormalMove.new(new_position)
-    when self.class == Pawn
-      return create_pawn_move(new_position)
     end
   end
 
@@ -40,7 +40,24 @@ module MoveValidator
 
   module PawnMoves
     def create_pawn_move(new_position)
+      return NormalMove.new(new_position)
+    end
+      
+    def create_special_move(new_position, front_position)
+      if first_move?() && !has_piece?(front_position)
+        return NormalMove.new(new_position) 
+      end
+    end
 
+    def create_pawn_capture(new_position)
+      if has_enemy_piece?(new_position)
+        attacked_piece = self.board.get_piece(new_position)
+        return CaptureMove(new_position, attacked_piece)
+      end
+    end
+
+    def first_move?
+      return !self.moved
     end
     
   end

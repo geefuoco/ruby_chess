@@ -5,7 +5,7 @@ require_relative "../lib/moves/abstract_move"
 
 describe Pawn do
 
-  subject(:pawn) { Pawn.new("white", [1, 2], Board.new) }
+  subject(:pawn) { Pawn.new("black", [1, 2], Board.new) }
 
   describe "#get_legal_moves" do
 
@@ -26,6 +26,7 @@ describe Pawn do
 
     context "when on the starting rank and moved is true" do
       it "should have 1 legal move" do
+        pawn.move([1, 2])
         moves = pawn.get_legal_moves
         expect(moves.length).to eq(1)
       end
@@ -36,7 +37,7 @@ describe Pawn do
   describe "#direction" do
 
     context "when the piece is white" do
-
+      subject(:pawn) { Pawn.new("white", [0, 0], Board.new)}
       it "should return -1" do
         expect(pawn.direction).to eq(-1)
       end
