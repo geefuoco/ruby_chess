@@ -13,7 +13,7 @@ class Knight < AbstractPiece
       file_offset = move_set[1]
       new_position = [rank_index + rank_offset, 
                       file_index + file_offset]
-      next if outside_of_board(new_position)
+      next if outside_of_board?(new_position)
       moves << create_move(new_position)
     end
     return moves.compact

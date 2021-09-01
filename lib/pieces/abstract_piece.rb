@@ -25,8 +25,8 @@ class AbstractPiece
     raise ChessExceptions::BaseClassError
   end
 
-  def move(new_position)
-    @position_coordinates = new_position
+  def move(move_object)
+    @position_coordinates = move_object.goal_position
     @moved = true
   end
 

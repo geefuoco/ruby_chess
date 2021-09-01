@@ -25,8 +25,10 @@ describe Pawn do
     end
 
     context "when on the starting rank and moved is true" do
+      let(:move) { instance_double("NormalMove", goal_position: [1, 2])}
+
       it "should have 1 legal move" do
-        pawn.move([1, 2])
+        pawn.move(move)
         moves = pawn.get_legal_moves
         expect(moves.length).to eq(1)
       end
@@ -34,8 +36,10 @@ describe Pawn do
 
     context "when at the position [2, 1] as a black pawn" do
       subject(:black_pawn) { Pawn.new("black", [2, 1], Board.new) }
+      let(:move) { instance_double("NormalMove", goal_position: [2, 1])}
+
       it "should contain [3, 1] only" do
-        black_pawn.move([2, 1])
+        black_pawn.move(move)
         moves = black_pawn.get_legal_moves
         expect(moves.map { |mv| mv.goal_position}).to contain_exactly(
           [3, 1]
@@ -50,11 +54,12 @@ describe Pawn do
 
       let(:piece) { instance_double("AbstractPiece", position_coordinates: [3, 2], color: "white") }
       let(:tile) { instance_double("Tile", occupied?: true, get_piece: piece)}
-    
+      let(:move) { instance_double("NormalMove", goal_position: [2, 1])}
+      
 
       it "should contain 2 moves" do
         board.set_tile(tile, [3, 2])
-        pawn.move([2, 1])
+        pawn.move(move)
         moves = pawn.get_legal_moves
         expect(moves.map{ |mv| mv.goal_position }).to contain_exactly(
           [3, 1], [3, 2]
@@ -69,11 +74,11 @@ describe Pawn do
 
       let(:piece) { instance_double("AbstractPiece", position_coordinates: [3, 1], color: "white") }
       let(:tile) { instance_double("Tile", occupied?: true, get_piece: piece)}
-    
+      let(:move) { instance_double("NormalMove", goal_position: [2, 1])}
 
       it "should contain no moves" do
         board.set_tile(tile, [3, 1])
-        pawn.move([2, 1])
+        pawn.move(move)
         moves = pawn.get_legal_moves
         expect(moves.map{ |mv| mv.goal_position }).to be_empty
       end
@@ -119,6 +124,52 @@ describe Pawn do
       it "should contain a promotion move" do
         moves = black_pawn.get_legal_moves
         expect(moves).to all(be_a(PromotionMove))
+      end
+    end
+
+    context "when at position [4, 4] as a white pawn" do
+      let(:board) { Board.new}
+      subject(:pawn) { Pawn.new("white", [4, 4], board) }
+      let(:enemy_pawn) { Pawn.new("black", [4, 3], board) }
+      let(:tile) { instance_double("Tile", occupied?: true, get_piece: enemy_pawn)}
+
+      it "should be able to enpassant a black pawn on [4, 3]" do
+        board.set_tile(tile, [4, 3])
+        enemy_pawn.instance_variable_set(:@passable, true)
+        moves = pawn.get_legal_moves
+        expect(moves.map{ |mv| mv.goal_position }.include?([3, 3])).to be
+      end
+    end
+
+    context "when at position [4, 4] as white pawn " do
+      let(:board) { Board.new}
+      subject(:pawn) { Pawn.new("white", [4, 4], board) }
+      let(:enemy_pawn) { Pawn.new("black", [4, 5], board) }
+      let(:tile) { instance_double("Tile", occupied?: true, get_piece: enemy_pawn)}
+
+      it "should be able to enpassant a black pawn on [4, 5]" do
+        board.set_tile(tile, [4, 5])
+        enemy_pawn.instance_variable_set(:@passable, true)
+        moves = pawn.get_legal_moves
+        expect(moves.map{ |mv| mv.goal_position }.include?([3, 5])).to be
+      end
+    end
+
+    context "when at position [4, 4] as white pawn " do
+      let(:board) { Board.new}
+      subject(:pawn) { Pawn.new("white", [4, 4], board) }
+      let(:enemy_pawn) { Pawn.new("black", [4, 5], board) }
+      let(:not_passable) { Pawn.new("black", [4, 3], board)}
+      let(:tile) { instance_double("Tile", occupied?: true, get_piece: enemy_pawn)}
+
+      it "should be able to enpassant a black pawn on [4, 5]" do
+        pawn.instance_variable_set(:@moved, true)
+        board.set_tile(tile, [4, 5])
+        enemy_pawn.instance_variable_set(:@passable, true)
+        moves = pawn.get_legal_moves
+        expect(moves.map{ |mv| mv.goal_position }).to contain_exactly(
+          [3, 4], [3, 5]
+        )
       end
     end
       

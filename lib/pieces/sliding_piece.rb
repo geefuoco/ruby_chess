@@ -14,7 +14,7 @@ class SlidingPiece < AbstractPiece
   end
 
   def add_sliding_moves(new_position, move_set, moves)
-    while !outside_of_board(new_position)
+    while !outside_of_board?(new_position)
       moves << create_move(new_position)
       break if has_piece?(new_position)
       rank_offset = move_set[0] + new_position[0]
