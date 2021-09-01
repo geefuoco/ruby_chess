@@ -32,6 +32,87 @@ describe Pawn do
       end
     end
 
+    context "when at the position [2, 1] as a black pawn" do
+      subject(:black_pawn) { Pawn.new("black", [2, 1], Board.new) }
+      it "should contain [3, 1] only" do
+        black_pawn.move([2, 1])
+        moves = black_pawn.get_legal_moves
+        expect(moves.map { |mv| mv.goal_position}).to contain_exactly(
+          [3, 1]
+        )
+      end
+    end
+
+    context "when at the position [2, 1] as black pawn and a piece on [3, 2]" do
+
+      let(:board) { Board.new}
+      subject(:pawn) { Pawn.new("black", [2, 1], board) }
+
+      let(:piece) { instance_double("AbstractPiece", position_coordinates: [3, 2], color: "white") }
+      let(:tile) { instance_double("Tile", occupied?: true, get_piece: piece)}
+    
+
+      it "should contain 2 moves" do
+        board.set_tile(tile, [3, 2])
+        pawn.move([2, 1])
+        moves = pawn.get_legal_moves
+        expect(moves.map{ |mv| mv.goal_position }).to contain_exactly(
+          [3, 1], [3, 2]
+        )
+      end
+    end
+
+    context "when at the position [2, 1] as black pawn and a piece on [3, 1]" do
+
+      let(:board) { Board.new}
+      subject(:pawn) { Pawn.new("black", [2, 1], board) }
+
+      let(:piece) { instance_double("AbstractPiece", position_coordinates: [3, 1], color: "white") }
+      let(:tile) { instance_double("Tile", occupied?: true, get_piece: piece)}
+    
+
+      it "should contain no moves" do
+        board.set_tile(tile, [3, 1])
+        pawn.move([2, 1])
+        moves = pawn.get_legal_moves
+        expect(moves.map{ |mv| mv.goal_position }).to be_empty
+      end
+    end
+
+    context "when at the position [1, 1] as black pawn and a piece on [2, 1]" do
+
+      let(:board) { Board.new}
+      subject(:pawn) { Pawn.new("black", [1, 1], board) }
+
+      let(:piece) { instance_double("AbstractPiece", position_coordinates: [2, 1], color: "white") }
+      let(:tile) { instance_double("Tile", occupied?: true, get_piece: piece)}
+    
+
+      it "should contain no moves" do
+        board.set_tile(tile, [2, 1])
+        moves = pawn.get_legal_moves
+        expect(moves.map{ |mv| mv.goal_position }).to be_empty
+      end
+    end
+
+    context "when at the position [1, 1] as black pawn and a piece on [3, 1]" do
+
+      let(:board) { Board.new}
+      subject(:pawn) { Pawn.new("black", [1, 1], board) }
+
+      let(:piece) { instance_double("AbstractPiece", position_coordinates: [3, 1], color: "white") }
+      let(:tile) { instance_double("Tile", occupied?: true, get_piece: piece)}
+    
+
+      it "should contain no moves" do
+        board.set_tile(tile, [3, 1])
+        moves = pawn.get_legal_moves
+        expect(moves.map{ |mv| mv.goal_position }).to contain_exactly(
+          [2, 1]
+        )
+      end
+    end
+      
   end
 
   describe "#direction" do

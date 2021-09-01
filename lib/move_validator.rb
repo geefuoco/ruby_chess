@@ -40,11 +40,13 @@ module MoveValidator
 
   module PawnMoves
     def create_pawn_move(new_position)
-      return NormalMove.new(new_position)
+      return NormalMove.new(new_position) if normal_move?(new_position)
     end
       
     def create_special_move(new_position, front_position)
-      if first_move?() && !has_piece?(front_position)
+      if first_move?() && 
+        !has_piece?(front_position) && 
+        !has_piece?(new_position)
         return NormalMove.new(new_position) 
       end
     end
@@ -52,12 +54,21 @@ module MoveValidator
     def create_pawn_capture(new_position)
       if has_enemy_piece?(new_position)
         attacked_piece = self.board.get_piece(new_position)
-        return CaptureMove(new_position, attacked_piece)
+        return CaptureMove.new(new_position, attacked_piece)
       end
+    end
+
+    def create_pawn_promotion(new_position)
+      return PromotionMove.new(new_position) if promotable?()
     end
 
     def first_move?
       return !self.moved
+    end
+
+    def promotable?(new_position)
+      self.color == "black" && new_position[0] == 7 ||
+      self.color == "white" && new_position[0] == 0
     end
     
   end
