@@ -1,7 +1,7 @@
 require_relative "../lib/pieces/pawn"
 require_relative "../lib/board"
 require_relative "../lib/moves/abstract_move"
-
+require_relative "../lib/moves/promotion_move"
 
 describe Pawn do
 
@@ -110,6 +110,15 @@ describe Pawn do
         expect(moves.map{ |mv| mv.goal_position }).to contain_exactly(
           [2, 1]
         )
+      end
+    end
+
+    context "when at the position [6, 0] as a black pawn" do
+
+      subject(:black_pawn) { Pawn.new("black", [6, 0], Board.new) }
+      it "should contain a promotion move" do
+        moves = black_pawn.get_legal_moves
+        expect(moves).to all(be_a(PromotionMove))
       end
     end
       

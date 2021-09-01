@@ -1,5 +1,6 @@
 require_relative "./moves/normal_move"
 require_relative "./moves/capture_move"
+require_relative "./moves/promotion_move"
 
 module MoveValidator
 
@@ -40,26 +41,32 @@ module MoveValidator
 
   module PawnMoves
     def create_pawn_move(new_position)
-      return NormalMove.new(new_position) if normal_move?(new_position)
+      case
+      when normal_move?(new_position) && promotable?(new_position)
+        return PromotionMove.new(new_position) 
+      when normal_move?(new_position)
+        return NormalMove.new(new_position)
+      end
     end
       
     def create_special_move(new_position, front_position)
       if first_move?() && 
+        !outside_of_board(new_position) &&
         !has_piece?(front_position) && 
-        !has_piece?(new_position)
+        !has_piece?(new_position) 
         return NormalMove.new(new_position) 
       end
     end
 
-    def create_pawn_capture(new_position)
+    def create_pawn_capture(new_position) 
       if has_enemy_piece?(new_position)
         attacked_piece = self.board.get_piece(new_position)
-        return CaptureMove.new(new_position, attacked_piece)
+        if promotable?(new_position)
+          return PromotionMove.new(new_position, attacked_piece)
+        else
+          return CaptureMove.new(new_position, attacked_piece)
+        end
       end
-    end
-
-    def create_pawn_promotion(new_position)
-      return PromotionMove.new(new_position) if promotable?()
     end
 
     def first_move?
