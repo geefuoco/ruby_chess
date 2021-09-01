@@ -17,7 +17,19 @@ describe Pawn do
       end
     end
 
+    context "when on the starting rank and moved is false" do
+      it "should have 2 legal moves" do
+        moves = pawn.get_legal_moves
+        expect(moves.length).to eq(2)
+      end
+    end
 
+    context "when on the starting rank and moved is true" do
+      it "should have 1 legal move" do
+        moves = pawn.get_legal_moves
+        expect(moves.length).to eq(1)
+      end
+    end
 
   end
 

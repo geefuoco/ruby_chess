@@ -10,6 +10,8 @@ module MoveValidator
       return CaptureMove.new(new_position, attacked_piece)
     when normal_move?(new_position)
       return NormalMove.new(new_position)
+    when self.class == Pawn
+      return create_pawn_move(new_position)
     end
   end
 
@@ -36,4 +38,12 @@ module MoveValidator
     !self.board.position_occupied?(new_position)
   end
 
+  module PawnMoves
+    def create_pawn_move(new_position)
+
+    end
+    
+  end
+
+  include PawnMoves
 end
