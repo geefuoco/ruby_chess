@@ -100,5 +100,12 @@ module MoveValidator
     
   end
 
+  module KingMoves
+    def create_castle_move(new_position)
+      
+    end
+  end
+
+  include KingMoves
   include PawnMoves
 end

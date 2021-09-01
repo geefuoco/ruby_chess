@@ -16,7 +16,15 @@ describe King do
       end
     end
 
-    
+    context "when on position [7, 4]" do
+
+      it "should return all legal moves" do
+        moves = king.get_legal_moves  
+        expect(moves.map { |mv| mv.goal_position }).to contain_exactly(
+          [7, 3], [7, 5], [6, 4], [6, 3], [6, 5]
+        )
+      end
+    end
 
   end
 end
