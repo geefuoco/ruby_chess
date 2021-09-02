@@ -38,6 +38,11 @@ class Board
     tile.set_piece(piece)
   end
 
+  def remove_piece(position_coordinates)
+    tile = get_tile(position_coordinates)
+    tile.remove_piece
+  end
+
   def get_tile(position_coordinates)
     rank_index = position_coordinates[0]
     file_index = position_coordinates[1]
@@ -56,11 +61,28 @@ class Board
       rank.any? do |tile|
         begin
           piece = get_piece(tile.position)
+          next if piece.class == King
           piece.get_legal_moves.any? do |mv|
             mv.class == CaptureMove &&  
             mv.attacked_piece.class == King &&
             mv.attacked_piece.color != piece.color
           end
+        rescue => e
+        end 
+      end
+    end
+  end
+
+  def get_pieces_attacking_position(position_coordinates)
+    attacking_pieces = []
+    @board.each do |rank|
+      rank.each do |tile|
+        begin
+          piece = get_piece(tile.position)
+          bool = piece.get_legal_moves
+               .map { |mv| mv.goal_position}
+               .include?(position_coordinates)
+          attacking_pieces << piece if bool
         rescue ChessExceptions::NoPieceError
         end 
       end

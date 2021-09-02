@@ -26,5 +26,32 @@ describe King do
       end
     end
 
+    context "when in a ready position to castle" do
+
+      let(:board) { Board.new }
+      
+      it "should contain a castle move" do
+        board.convert_fen("r1bqkb1r/pppp1ppp/2n2n2/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4")
+        king = board.get_piece([7, 4])
+        moves = king.get_legal_moves
+        expect(moves.map { |mv| mv.goal_position }).to contain_exactly(
+          [6, 4], [7, 5], [7, 6]
+        )
+      end
+    end
+
+    context "when in a position not able to castle" do
+      let(:board) { Board.new }
+      
+      it "should contain a castle move" do
+        board.convert_fen("r1bqkb1r/pppp1ppp/2n2n2/1B2p3/4P3/5N2/PPPP1PPP/RNBQK1R1 b Qkq - 5 4")
+        king = board.get_piece([7, 4])
+        moves = king.get_legal_moves
+        expect(moves.map { |mv| mv.goal_position }).to contain_exactly(
+          [6, 4], [7, 5]
+        )
+      end
+    end
+
   end
 end

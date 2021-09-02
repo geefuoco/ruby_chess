@@ -72,6 +72,20 @@ describe Board do
     end
   end
 
+  describe "#remove_piece" do
+
+    context "when given a position" do
+
+      let(:piece)  { instance_double("AbstractPiece", position_coordinates: [0, 0], color: "black") }
+
+      it "should remove the piece from the position" do 
+        board.set_piece(piece, [0, 0])
+        board.remove_piece([0, 0])
+        expect{board.get_piece([0, 0])}.to raise_error(ChessExceptions::NoPieceError)
+      end
+    end
+  end
+
   describe "#check?" do
     context "when it is check" do
 
@@ -102,5 +116,6 @@ describe Board do
       end
     end
   end
+
   
 end

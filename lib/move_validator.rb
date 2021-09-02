@@ -2,6 +2,7 @@ require_relative "./moves/normal_move"
 require_relative "./moves/capture_move"
 require_relative "./moves/promotion_move"
 require_relative "./moves/special_move"
+require_relative "./moves/castle_move"
 
 
 module MoveValidator
@@ -101,8 +102,66 @@ module MoveValidator
   end
 
   module KingMoves
-    def create_castle_move(new_position, side_position, castle_position)
-      #waiting for check implementation?
+    def create_castle_move(new_position, side_position, rook_index)
+      if can_castle?(new_position, side_position, rook_index)
+        return if will_be_in_check?(new_position, side_position)
+        rook = rook_selector(rook_index)
+        return CastleMove.new(new_position, rook)
+      end
+    end
+
+    def will_be_in_check?(new_position, side_position)
+      self.board.set_piece(self, side_position)
+      side_check =  self.board.check?
+      self.board.set_piece(self, new_position)
+      new_check = self.board.check?
+      self.board.remove_piece(side_position)
+      self.board.remove_piece(new_position)
+      return side_check || new_check
+    end
+
+    def blocked_path?(new_position, side_position)
+      begin
+          self.board.get_piece(side_position)
+          self.board.get_piece(new_position)
+      rescue => e
+        return false
+      end
+      return true
+    end
+
+    def can_castle?(new_position, side_position, rook_index)
+      !self.moved &&
+      !self.board.check? &&
+      !rook_selector(rook_index).nil? &&
+      !rook_selector(rook_index).moved &&
+      !blocked_path?(new_position, side_position)
+    end
+
+
+    def rook_selector(rook_index)
+      case 
+      when rook_index == 0 && self.color == "white"
+        begin
+          return self.board.get_piece([7, 0])
+        rescue => e
+        end
+      when rook_index == 1 && self.color == "white"
+        begin
+          return self.board.get_piece([7, 7])
+        rescue => e
+        end
+      when rook_index == 0 && self.color == "black"
+        begin
+          return self.board.get_piece([0, 0])
+        rescue => e
+        end
+      when rook_index == 1 && self.color == "black"
+        begin
+          return self.board.get_piece([0, 7])
+        rescue => e
+        end
+      end
     end
   end
 
