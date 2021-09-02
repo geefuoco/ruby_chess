@@ -62,12 +62,42 @@ describe Board do
         expect(board.get_piece([4, 4])).to eq(piece)
       end
     end
+
+    context "when the piece is set on position [0, 0]" do
+      let(:piece) { instance_double("AbstractPiece", position_coordinates: [0, 0], color: "black")}
+      it "should put a piece on [0, 0]" do
+        board.set_piece(piece, [0, 0])
+        expect(board.get_piece([0, 0])).to eq(piece)
+      end
+    end
   end
 
   describe "#check?" do
     context "when it is check" do
 
-      xit "should return true" do
+      subject(:board) { Board.new }
+
+      it "should return true" do
+        board.convert_fen("rnbqk1nr/pppp1ppp/8/4p3/1b1PP3/8/PPP2PPP/RNBQKBNR w KQkq - 1 3")
+        expect(board).to be_check
+      end
+    end
+
+    context "another position that is check" do
+
+      subject(:board)  { Board.new }
+
+      it "should return true" do
+        board.convert_fen("r1bq1rk1/ppp5/3p3p/1B3pp1/3bn3/2N2P2/PPP3PP/R2Q1RK1 w - - 0 14")
+        expect(board).to be_check
+      end
+    end
+    context "when it is not check" do 
+      subject(:board) { Board.new }
+
+      it "should return false" do
+        board.convert_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+        expect(board).to_not be_check
 
       end
     end

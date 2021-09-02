@@ -13,12 +13,14 @@ module ForsythEdwardsNotation
     rank = 0
     file = 0
     pieces.each do |string|
-      string.each do |letter|
+      string.length.times do |n|
+        letter = string[n]
         if /\d/ === letter
-          file += letter
+          file += letter.to_i
         else 
           piece = piece_selector(letter, [rank, file])
           self.set_piece(piece, [rank, file])
+          file += 1
         end
       end
       file = 0

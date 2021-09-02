@@ -52,15 +52,18 @@ class Board
 
 
   def check?
-    board.any? do |tile|
-      begin
-        piece = get_piece(tile.position_coordinates)
-        piece.get_legal_moves.any? do |mv| 
-          get_piece(mv).class == King &&
-          get_piece(mv).color != piece.color
-        end
-      rescue ChessExceptions::NoPieceError
-      end 
+    @board.any? do |rank|
+      rank.any? do |tile|
+        begin
+          piece = get_piece(tile.position)
+          piece.get_legal_moves.any? do |mv|
+            mv.class == CaptureMove &&  
+            mv.attacked_piece.class == King &&
+            mv.attacked_piece.color != piece.color
+          end
+        rescue ChessExceptions::NoPieceError
+        end 
+      end
     end
   end
 
