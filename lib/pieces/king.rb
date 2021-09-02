@@ -21,11 +21,13 @@ class King < AbstractPiece
   end
 
   def generate_special_moves(moves, rank_index, file_index)
-    SPECIAL_MOVE.each do |sp|
+    SPECIAL_MOVE.each do |move_set|
       rank_offset = rank_index + move_set[0]
       file_offset = file_index + move_set[1]
       new_position = [rank_offset, file_offset]
-      moves << create_move(new_position)
+      side_position = [rank_index, (file_offset-file_index)/2]
+      castle_position = [rank_index, file_offset]
+      moves << create_castle_move(new_position, side_position, castle_position)
     end
   end
 

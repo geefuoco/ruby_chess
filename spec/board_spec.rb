@@ -51,5 +51,26 @@ describe Board do
       end
     end
   end
+
+  describe "#set_piece" do
+    context "when given a piece and coordinate positions" do 
+
+      let(:piece) { instance_double("AbstractPiece", position_coordinates: [4, 4], color: "black")}
+    
+      it "should set the tile with the corresponding piece" do
+        board.set_piece(piece, [4, 4])
+        expect(board.get_piece([4, 4])).to eq(piece)
+      end
+    end
+  end
+
+  describe "#check?" do
+    context "when it is check" do
+
+      xit "should return true" do
+
+      end
+    end
+  end
   
 end

@@ -101,8 +101,8 @@ module MoveValidator
   end
 
   module KingMoves
-    def create_castle_move(new_position)
-      
+    def create_castle_move(new_position, side_position, castle_position)
+      #waiting for check implementation?
     end
   end
 
