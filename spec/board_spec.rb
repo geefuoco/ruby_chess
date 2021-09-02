@@ -117,5 +117,129 @@ describe Board do
     end
   end
 
+  describe "#valid_piece_move?" do
+
+    context "when the move is valid" do
+
+      subject(:board) { Board.new }
+
+      it "should return true" do
+        board.convert_fen(Board::START)
+        pawn = board.get_piece([6, 1])
+        expect(board.valid_piece_move?(pawn, [6, 3])).to be
+      end
+    end
+
+    context "when the move will put a king in check" do
+
+      subject(:board) { Board.new }
+
+      it "should return false" do
+        board.convert_fen("rnbqk1nr/ppp2ppp/4p3/3p4/1bPP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 2 4")
+        knight = board.get_piece([5, 2])
+        expect(board.valid_piece_move?(knight, [4, 0])).to be false
+      end
+    end
+  end
+
+
+  describe "#get_checked_king" do
+
+    context "when a king is in check" do
+
+      let(:board) { Board.new }
+      
+      it "should return the king object" do 
+        board.convert_fen("rnbqk1nr/pppp1ppp/8/4p3/1b1PP3/8/PPP2PPP/RNBQKBNR w KQkq - 1 3")
+        king = board.get_piece([7, 4])
+        checked = board.get_checked_king
+        expect(king).to eq(checked)
+
+      end
+    end
+
+    context "when there is not a king in check" do
+
+      it "should return nil" do
+        board.convert_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+        checked = board.get_checked_king
+        expect(checked).to be_nil
+      end
+    end
+  end
+
+  describe "#get_pieces_attacking_king" do
+
+    context "when a piece is attacking a king" do
+
+      let(:board) { Board.new }
+
+      it "should be in this array" do
+        board.convert_fen("rnb1kbnr/pppp1ppp/8/4p3/5P1q/P7/1PPPP1PP/RNBQKBNR w KQkq - 1 3")
+        piece = board.get_piece([4, 7])
+        attacking_pieces = board.get_pieces_attacking_king
+        expect(attacking_pieces).to contain_exactly(piece)
+      end
+    end
+  end
+
+  describe "#piece_can_be_captured?" do 
+
+    context "when a piece is on a sqaure that is not available to capture" do
+
+      subject(:board) { Board.new }
+
+      it "should return false" do
+        board.convert_fen("rnbqkb1r/pppp1Qpp/8/4p3/2B1n3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4")
+        queen = board.get_piece([1, 5])
+        expect(board.piece_can_be_captured?(queen)).to be false
+      end
+    end
+
+    context "when a piece is on a square tha can be captured" do
+
+      subject(:board) { Board.new }
+
+      it "should return true" do
+        board.convert_fen("rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2")
+        black_pawn = board.get_piece([3, 3])
+        expect(board.piece_can_be_captured?(black_pawn)).to be 
+      end
+    end
+  end
+
+  describe "#checkmate?" do
+
+    context "when the king is in check with no available moves" do
+
+      let(:checkmated_board) { Board.new }
+
+      it "should be checkmate" do
+        checkmated_board.convert_fen("rnbqkb1r/pppp1Qpp/8/4p3/2B1n3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4")
+        expect(checkmated_board).to be_checkmate
+      end
+    end
+
+    context "when the attacking piece can be captured" do
+
+      let(:not_checkmate) { Board.new }
+
+      it "should not be checkmate" do
+        not_checkmate.convert_fen("r1bnkb1r/ppppqQpp/8/4p3/P1B1n3/2N5/1PPP1PPP/R1B1K1NR b KQkq - 0 7")
+        expect(not_checkmate).to_not be_checkmate
+      end
+    end
+
+    context "when the attacking piece can be blocked" do
+
+      let(:blocked_check) { Board.new }
+
+      it "should not be checkmate" do
+        blocked_check.convert_fen("rnb1kbnr/pppp1ppp/8/4p3/5P1q/P7/1PPPP1PP/RNBQKBNR w KQkq - 1 3")
+        expect(blocked_check).to_not be_checkmate
+      end
+    end
+  end
+
   
 end

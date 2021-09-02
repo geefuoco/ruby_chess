@@ -53,5 +53,19 @@ describe King do
       end
     end
 
+    context "when in the given position from the fen string" do
+
+      let(:board) { Board.new }
+
+      it "should only have 1 available move" do
+        board.convert_fen("rn1q1rk1/pp2ppbp/3p1np1/8/3NPPb1/2N1B3/PPPQ2PP/R3KB1R w KQ - 5 9")
+        king = board.get_piece([7, 4])
+        moves = king.get_legal_moves
+        expect(moves.map { |mv| mv.goal_position }).to contain_exactly(
+          [6, 5]
+        )
+      end
+    end
   end
+
 end

@@ -11,6 +11,8 @@ module MoveValidator
     case
     when self.class == Pawn
       return create_pawn_move(new_position)
+    when self.class == King
+      return create_king_move(new_position)
     when has_enemy_piece?(new_position)
       attacked_piece = self.board.get_piece(new_position)
       return CaptureMove.new(new_position, attacked_piece)
@@ -102,32 +104,42 @@ module MoveValidator
   end
 
   module KingMoves
+
+    def create_king_move(new_position)
+      case
+      when has_enemy_piece?(new_position)
+        return if !self.board.valid_piece_move?(self, new_position)
+        attacked_piece = self.board.get_piece(new_position)
+        return CaptureMove.new(new_position, attacked_piece)
+      when normal_move?(new_position)
+        return if !self.board.valid_piece_move?(self, new_position)
+        return NormalMove.new(new_position)
+      end
+    end
+
     def create_castle_move(new_position, side_position, rook_index)
       if can_castle?(new_position, side_position, rook_index)
-        return if will_be_in_check?(new_position, side_position)
+        return if !self.board.valid_piece_move?(self, new_position)
+        return if !self.board.valid_piece_move?(self, side_position)
         rook = rook_selector(rook_index)
         return CastleMove.new(new_position, rook)
       end
     end
 
-    def will_be_in_check?(new_position, side_position)
-      self.board.set_piece(self, side_position)
-      side_check =  self.board.check?
-      self.board.set_piece(self, new_position)
-      new_check = self.board.check?
-      self.board.remove_piece(side_position)
-      self.board.remove_piece(new_position)
-      return side_check || new_check
-    end
-
     def blocked_path?(new_position, side_position)
+      side_pos = true
+      new_pos = true
       begin
-          self.board.get_piece(side_position)
-          self.board.get_piece(new_position)
+        self.board.get_piece(side_position)
       rescue => e
-        return false
+        side_pos = false
       end
-      return true
+      begin
+        self.board.get_piece(new_position)
+      rescue => e
+        new_pos = false
+      end
+      return side_pos || new_pos
     end
 
     def can_castle?(new_position, side_position, rook_index)

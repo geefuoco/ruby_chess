@@ -6,6 +6,5 @@ class CaptureMove < AbstractMove
     super(goal_position)
     @attacked_piece = attacked_piece
   end
-  
 
 end

@@ -20,6 +20,8 @@ class Pawn < AbstractPiece
     super(move_object)
     if move_object.class == SpecialMove
       @passable = true
+      #all pawns of opposite to current player should have passable
+      #set to false at the end of every turn****
     end
   end
 
