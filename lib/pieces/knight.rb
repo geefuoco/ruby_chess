@@ -4,7 +4,8 @@ class Knight < AbstractPiece
 
   MOVE_SET = [[-1, -2], [-1, 2], [1, -2], [1, 2],
               [-2, -1], [-2, 1], [2, -1], [2, 1]]
-
+  BLACK = "\u265E"
+  WHITE = "\u2658"
 
   def create_moves(rank_index, file_index)
     moves = []

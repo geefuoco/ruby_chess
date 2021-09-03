@@ -4,6 +4,8 @@ class King < AbstractPiece
 
   MOVE_SET = [[1, 0], [-1, 0], [0, -1], [0, 1], [1, 1], [1, -1], [-1, 1], [-1, -1]]
   SPECIAL_MOVE = [[0, -2], [0, 2]]
+  BLACK = "\u265A"
+  WHITE = "\u2654"
 
   def create_moves(rank_index, file_index)
     moves = []

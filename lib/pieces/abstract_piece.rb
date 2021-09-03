@@ -30,6 +30,10 @@ class AbstractPiece
     @moved = true
   end
 
+  def code
+    color == "white" ? self.class::WHITE : self.class::BLACK
+  end
+
   def update
 
   end

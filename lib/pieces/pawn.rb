@@ -6,7 +6,8 @@ class Pawn < AbstractPiece
   MOVE_SET = [1, 0]
   SPECIAL_MOVE = [2, 0]
   CAPTURE_SET = [[1, 1], [1, -1]]
-
+  BLACK = "\u265F"
+  WHITE = "\u2659"
   attr_reader :passable
   def create_moves(rank_index, file_index)
     moves = []

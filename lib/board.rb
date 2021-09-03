@@ -1,10 +1,12 @@
 require "observer"
 require_relative "./tile"
 require_relative "./forsyth_edwards_notation"
+require_relative "./board_displayer"
 
 class Board
 
   include Observable
+  include BoardDisplayer
   include ForsythEdwardsNotation
 
   FILES = 8

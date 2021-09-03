@@ -66,6 +66,19 @@ describe King do
         )
       end
     end
+
+    context "when in a position to castle both ways" do
+
+      let(:board) { Board.new }
+      it "should be a valid move" do
+        board.convert_fen("r1b1k2r/1pq1bppp/p1nppn2/8/3NPP2/2N1B3/PPPQB1PP/R3K2R w KQkq - 4 10")
+        king = board.get_piece([7, 4])
+        moves = king.get_legal_moves  
+        expect(moves.map { |mv| mv.goal_position }).to contain_exactly(
+          [7, 2], [7, 3], [6, 5], [7, 5], [7, 6]
+        )
+      end
+    end
   end
 
 end
