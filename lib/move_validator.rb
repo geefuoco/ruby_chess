@@ -122,7 +122,7 @@ module MoveValidator
         return if !self.board.valid_piece_move?(self, new_position)
         return if !self.board.valid_piece_move?(self, side_position)
         rook = rook_selector(rook_index)
-        return CastleMove.new(new_position, rook)
+        return CastleMove.new(new_position, rook, NormalMove.new(side_position))
       end
     end
 

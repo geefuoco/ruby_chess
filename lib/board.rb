@@ -28,10 +28,6 @@ class Board
     return board
   end
 
-  def execute_move()
-
-  end
-
   def checkmate?
     check?() &&
     king_no_moves?() && 
@@ -163,7 +159,59 @@ class Board
     end
   end
     
-  
+  def execute_move(piece, move)
+    case
+    when move.class == CastleMove
+      castle_move(piece, move)
+    when move.class == PromotionMove
+      promotion_move(piece, move)
+    else
+      normal_move(piece, move)
+    end
+  end
+
+  def promotion_move(piece, move)
+    normal_move(piece, move)
+    puts "Select a piece to promote to"
+    puts "[q] Queen, [r] Rook, [b] Bishop, [n] Knight"
+    input = gets.chomp
+    validate_promotion(input)
+    if piece.color == "white"
+      input.capitalize!
+    end
+    set_promoted_piece(input, move.goal_position)
+  end
+
+  def set_promoted_piece(input, position_coordinates)
+    piece = piece_selector(input, position_coordinates)
+    set_piece(piece, position_coordinates)
+  end
+
+  def validate_promotion(input)
+    while !valid_input(input) do
+      validate_promotion(gets.chomp)
+    end
+  end
+
+  def valid_input(input)
+    input == "q" || input == "r" || 
+    input == "n" || input == "b"  
+  end
+
+  def castle_move(piece, move)
+    normal_move(piece, move)
+    rook = move.rook
+    normal_move(rook, move.rook_move)
+  end
+
+  def normal_move(piece, move)
+    start_position = piece.position_coordinates
+    start_tile = get_tile(start_position)
+    start_tile.remove_piece
+    new_tile = get_tile(move.goal_position)
+    new_tile.set_piece(piece)
+    piece.move(move)
+  end
 
   def position_occupied?(position_coordinate)
     return get_tile(position_coordinate).occupied?

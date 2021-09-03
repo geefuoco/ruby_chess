@@ -1,5 +1,8 @@
 require_relative "./board"
+require_relative "./game"
 
 board = Board.new
-board.convert_fen(Board::START)
-board.print_board
+game = Game.new(board)
+
+game.start
+

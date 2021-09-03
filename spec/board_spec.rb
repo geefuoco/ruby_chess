@@ -241,27 +241,115 @@ describe Board do
     end
   end
 
-  describe  "#execute_move" do
+  describe "#normal_move" do
 
-    context "when given a move object " do 
+    context "when a piece is moved with a normal move" do
 
-      let(:board) { Board.new }
-
-      before do 
+      subject(:board) { Board.new }
+      
+      before do
         board.convert_fen(Board::START)
-        board.execute_move()
+        pawn = board.get_piece([6, 4])
+        move = pawn.get_legal_moves.select { |mv| mv.goal_position == [4, 4] }.first
+        board.normal_move(pawn, move)
       end
 
-      xit "should move the piece to the goal position" do
-        
+      it "should leave the old tile empty" do
+        old_tile = board.get_tile([6, 4])
+        expect(old_tile).to_not be_occupied
       end
 
-      xit "should not have a piece in the old position" do
-
+      it "should have a piece on the new tile" do
+        new_tile = board.get_tile([4, 4])
+        expect(new_tile).to be_occupied 
       end
     end
   end
+
+  describe "#castle_move" do 
+
+    context "when a caste move is initiated" do
+
+      subject(:board) { Board.new }
+
+      before do
+        board.convert_fen("r1bqkb1r/pppp1ppp/2n2n2/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4")
+        king = board.get_piece([7, 4])
+        move = king.get_legal_moves.select { |mv| mv.goal_position == [7, 6] }.first
+        board.castle_move(king, move)
+      end
+
+      it "should move the king to the tile on [7, 6]" do
+        castled_king_tile = board.get_tile([7, 6])
+        expect(castled_king_tile).to be_occupied
+      end
+
+      it "should move the rook from [7, 7] to [7, 5]" do
+        rook_tile = board.get_tile([7, 5])
+        expect(rook_tile).to be_occupied
+      end
+
+    end
+  end
+
+  describe "#promotion_move" do
+
+    context "when the move is a promotion move to queen" do
+
+      subject(:board) { Board.new }
+      
+
+      before do
+        board.convert_fen("r2q1bnr/ppPbkppp/2n5/8/4P3/8/PPP2PPP/RNBQKBNR w KQ - 1 6")
+        pawn = board.get_piece([1, 2])
+        move = pawn.get_legal_moves.select { |mv| mv.class == PromotionMove }.first
+        allow(board).to receive(:gets).and_return("q")
+        board.promotion_move(pawn, move)
+      end
+
+      it "should promote the pawn to a queen" do
+        queen = board.get_piece([0, 2])
+        expect(queen).to be_a(Queen)
+      end
+
+      it "should not have a piece on [1, 2]" do
+        expect{board.get_piece([1, 2])}.to raise_error(ChessExceptions::NoPieceError)
+      end
+
+    end
+
+    context "when the move is a promotion move to rook" do
+
+      subject(:board) { Board.new }
+      
+
+      before do
+        board.convert_fen("r2q1bnr/ppPbkppp/2n5/8/4P3/8/PPP2PPP/RNBQKBNR w KQ - 1 6")
+        pawn = board.get_piece([1, 2])
+        move = pawn.get_legal_moves.select { |mv| mv.class == PromotionMove }.first
+        allow(board).to receive(:gets).and_return("r")
+        board.promotion_move(pawn, move)
+      end
+
+      it "should promote the pawn to a rook" do
+        rook = board.get_piece([0, 2])
+        expect(rook).to be_a(Rook)
+      end
+
+      it "should be a white piece" do
+        rook = board.get_piece([0, 2])
+        expect(rook.color).to eq("white")
+      end
+
+      it "should not have a piece on [1, 2]" do
+        expect{board.get_piece([1, 2])}.to raise_error(ChessExceptions::NoPieceError)
+      end
+
+    end
+    
+  end
+
+
 end
 
   
-end
