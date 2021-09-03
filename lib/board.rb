@@ -28,6 +28,10 @@ class Board
     return board
   end
 
+  def execute_move()
+
+  end
+
   def checkmate?
     check?() &&
     king_no_moves?() && 
@@ -189,6 +193,10 @@ class Board
     rank_index = position_coordinates[0]
     file_index = position_coordinates[1]
     @board[rank_index][file_index] = tile
+  end
+
+  def select_piece(piece)
+    @selected_piece = piece
   end
 
 end

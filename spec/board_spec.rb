@@ -241,5 +241,27 @@ describe Board do
     end
   end
 
+  describe  "#execute_move" do
+
+    context "when given a move object " do 
+
+      let(:board) { Board.new }
+
+      before do 
+        board.convert_fen(Board::START)
+        board.execute_move()
+      end
+
+      xit "should move the piece to the goal position" do
+        
+      end
+
+      xit "should not have a piece in the old position" do
+
+      end
+    end
+  end
+end
+
   
 end
