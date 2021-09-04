@@ -61,4 +61,27 @@ describe ForsythEdwardsNotation do
     end
   end
 
+  describe "#generate_pieces_fen" do
+    
+    
+    context "when called" do
+      let(:board) { Board.new }
+      it "should convert the current board into FEN notation for pieces" do
+        board.convert_fen(Board::START)
+        expect(board.generate_pieces_fen).to eq("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
+      end
+    end
+  end
+
+  describe "#generate_castling_fen" do
+
+    context "when called" do
+      let(:board) { Board.new }
+      it "should get the letters for castling positions" do
+        board.convert_fen(Board::START)
+        letters = board.generate_castling_fen
+        expect(letters).to eq("KQkq")
+      end
+    end
+  end
 end

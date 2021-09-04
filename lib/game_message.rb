@@ -97,5 +97,31 @@ module GameMessage
     .green
   end
 
+  def display_stalemate
+    puts <<~HEREDOC
+    Stalemate.
+
+    GAMEOVER
+    HEREDOC
+
+  end
+
+  def display_draw
+    puts <<~HEREDOC
+
+    The game has ended in a draw
+
+    GAMEOVER
+
+    HEREDOC
+  end
+
+  def display_no_games_found
+    puts <<~HEREDOC
+    No games were found in the saved games folder.
+
+    Starting new game...
+    HEREDOC
+  end
 
 end

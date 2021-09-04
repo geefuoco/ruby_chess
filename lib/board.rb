@@ -1,9 +1,11 @@
 require_relative "./tile"
 require_relative "./forsyth_edwards_notation"
 require_relative "./board_displayer"
+require_relative "./board_util"
 
 class Board
 
+  include BoardUtil
   include BoardDisplayer
   include ForsythEdwardsNotation
 
@@ -31,6 +33,32 @@ class Board
     king_no_moves?() && 
    !can_capture_checker?() && 
    !can_block_checker?()
+  end
+
+  def stalemate?(color)
+    !check?() &&
+    no_legal_moves(color)
+  end
+
+  def no_legal_moves(color)
+    get_all_legal_moves(color).empty? 
+  end
+
+  def get_all_legal_moves(color)  
+    moves = []
+    @board.each do |rank|
+      rank.each do |tile|
+        begin
+          piece = get_piece(tile.position)
+          if piece.color == color
+            legal_moves = piece.get_legal_moves
+            legal_moves.each { |mv| moves << mv if valid_piece_move?(piece, mv.goal_position)}
+          end
+        rescue => exception
+        end
+      end
+    end
+    moves.flatten
   end
 
   def king_no_moves?

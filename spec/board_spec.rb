@@ -357,6 +357,39 @@ describe Board do
     
   end
 
+  describe "#get_all_legal_moves" do
+    
+    context "when given a color" do
+      subject(:board) { Board.new }
+      it "should return all legal move objects for that color" do
+        board.convert_fen("5bnr/4p1pq/4Qpkr/7p/2P4P/8/PP1PPPP1/RNB1KBNR b KQ - 2 10")
+        expect(board.get_all_legal_moves("black")).to contain_exactly()
+      end
+    end
+  end
+
+  describe "#stalemate?" do
+
+    context "when it is stalemate" do
+
+      subject(:board) { Board.new }
+
+      it "should return true" do
+
+        board.convert_fen("5bnr/4p1pq/4Qpkr/7p/2P4P/8/PP1PPPP1/RNB1KBNR b KQ - 2 10")
+        expect(board.stalemate?("black")).to be 
+      end
+    end
+
+    context "when it is not stalemate" do 
+      subject(:board) { Board.new }
+
+      it "should return false" do
+        board.convert_fen(Board::START)
+        expect(board.stalemate?("white")).to be false
+      end
+    end
+  end
 
 end
 

@@ -7,27 +7,18 @@ class Game
   def initialize(game_board)
     @game_board = game_board
     @players = ["white", "black"]
-    @coordinates = generate_coordinate_map()
-    @reversed = generate_coordinate_map().invert
-  end
-
-  def generate_coordinate_map
-    coordinates = {}
-    rank = 1
-    files = "abcdefgh"
-    7.downto(0) do |n|
-      8.times do |m|
-        coordinates["#{files[m]}#{rank}"] = [n, m]
-      end
-      rank += 1
-    end
-    return coordinates
+    @coordinates = game_board.generate_coordinate_map()
+    @reversed = game_board.generate_coordinate_map().invert
+    @full_moves = 1
+    @half_moves = 0
   end
 
   def start
     display_welcome()
     get_game()
     while !game_over?()
+      @game_board.print_board
+      return display_stalemate if @game_board.stalemate?(@players.first)
       return if @saved
       return display_resignation(@resign) if @resign
       game_turn()
@@ -49,13 +40,54 @@ class Game
   end
 
   def load
-
+    if Dir.exist?("saved_games")
+      if Dir.empty?("saved_games")
+        display_no_games_found()
+        return new_game() 
+      end
+      puts "Enter the number of the game to load"
+      index = 0
+      Dir.children("saved_games").each do |file|
+        next if file == "." || file == ".."
+        filename = "[#{index}] #{file}"
+        puts filename
+        index += 1
+      end
+      input = gets.chomp
+      return load if !(/\d/ === input)
+      if Dir.children("saved_games")[input.to_i].nil?
+        puts "Please only select from the available options"
+        return load 
+      end
+      save_file = Dir.children("saved_games")[input.to_i]
+      File.open("saved_games/#{save_file}", "r") { |file| 
+        return load_game_from_fen(file.read)
+      }
+    end
+    return new_game()
   end
 
   def save
     @save = "saved"
-
+    if !Dir.exist?("saved_games")
+      Dir.mkdir("saved_games")
+    end
+    File.open("saved_games/game #{Dir.children("saved_games").length}", "w") do |file|
+      player = @players.first
+      file.write(@game_board.convert_to_fen(player, @half_moves, @full_moves))
+    end
     return true
+  end
+
+  def load_game_from_fen(fen_string)
+    map = @game_board.convert_fen(fen_string)
+    puts map[:player] == @players.first
+    if !(map[:player] == @players.first)
+      puts "swapped"
+      swap_players()
+    end
+    @full_moves = map[:full_moves].to_i
+    @half_moves = map[:half_moves].to_i
   end
 
   def resign
@@ -64,13 +96,13 @@ class Game
   end
 
   def game_turn
-    @game_board.print_board
     display_turn()
     display_check_warning() if @game_board.check?()
     legal_move = execute_player_move()
     return game_turn() if legal_move.nil?
     @game_board.reset_passable_pawns(@players.first)
     swap_players()
+    increment_moves()
     puts `clear`
   end
 
@@ -86,6 +118,7 @@ class Game
     move_object = moves.select { |mv| mv.goal_position == move }.first
     return display_no_move_warning() if !moves.include?(move_object)
     return display_cannot_move_in_check_warning() if !valid_move?(piece, move_object)
+    process_half_moves(piece, move_object)
     @game_board.execute_move(piece, move_object)
     return true
   end
@@ -117,6 +150,20 @@ class Game
 
   def game_over?
     @game_board.checkmate?
+  end
+
+  def increment_moves
+    if @players.first == "white"
+      @full_moves += 1
+    end
+  end
+
+  def process_half_moves(piece, move_object)
+    if piece == Pawn || move_object != CaptureMove
+      @half_moves += 1
+    else
+      @half_moves = 0
+    end
   end
 
 end
