@@ -3,7 +3,6 @@ require "colorize"
 module BoardDisplayer
 
   def print_board
-
     count = 0
     rank_number = 8
     row = ""

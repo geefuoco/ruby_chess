@@ -12,7 +12,6 @@ class AbstractPiece
     @moved = false
     @legal_moves = {}
     @board = board
-    board.add_observer(self)
   end
 
   def get_legal_moves
@@ -32,10 +31,6 @@ class AbstractPiece
 
   def code
     color == "white" ? self.class::WHITE : self.class::BLACK
-  end
-
-  def update
-
   end
 
 end

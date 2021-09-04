@@ -58,6 +58,30 @@ module GameMessage
     HEREDOC
   end
 
+  def display_check_warning
+    puts <<~HEREDOC
+    WARNING: CHECK
+    HEREDOC
+    .red
+  end
+
+  def display_cannot_move_in_check_warning
+    puts <<~HEREDOC
+    \e[35mWARNING: You cannot do that while in check.\e[0m
+
+      Please select a legal move on the board.
+    HEREDOC
+  end
+
+  def display_game_end
+    puts <<~HEREDOC
+    Checkmate
+
+    #{@players.last} is the winner.
+    HEREDOC
+    .green
+  end
+
   def display_moves(array_of_moves)
     moves = array_of_moves.map { |mv| @reversed[mv.goal_position] }
     puts "Select from the moves below"

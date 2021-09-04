@@ -4,7 +4,7 @@ require_relative "../lib/chess_errors/chess_exceptions"
 
 
 describe AbstractPiece do 
-  let(:board) { instance_double("Board", add_observer: "ok") }
+  let(:board) { instance_double("Board") }
   subject(:piece) { AbstractPiece.new("black", [0, 0], board) } 
 
   describe "#get_legal_moves" do

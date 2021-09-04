@@ -52,11 +52,6 @@ describe Game do
         game.execute_player_move
       end
 
-      it "should call execute_move" do
-        expect(board).to receive(:execute_move).once
-        game.execute_player_move
-      end
-
     end
   end
 

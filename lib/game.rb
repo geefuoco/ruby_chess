@@ -32,7 +32,8 @@ class Game
       return display_resignation(@resign) if @resign
       game_turn()
     end
-
+    @game_board.print_board
+    display_game_end
   end
 
   def get_game(input=nil)
@@ -65,9 +66,10 @@ class Game
   def game_turn
     @game_board.print_board
     display_turn()
+    display_check_warning() if @game_board.check?()
     legal_move = execute_player_move()
     return game_turn() if legal_move.nil?
-    display_check_warning() if @game_board.check?()
+    @game_board.reset_passable_pawns(@players.first)
     swap_players()
     puts `clear`
   end
@@ -82,6 +84,8 @@ class Game
     move = get_move_from_input(moves)
     return display_no_move_warning() if move.nil?
     move_object = moves.select { |mv| mv.goal_position == move }.first
+    return display_no_move_warning() if !moves.include?(move_object)
+    return display_cannot_move_in_check_warning() if !valid_move?(piece, move_object)
     @game_board.execute_move(piece, move_object)
     return true
   end
@@ -96,6 +100,10 @@ class Game
       return selection
     end
     return piece
+  end
+
+  def valid_move?(piece, move)
+    @game_board.valid_piece_move?(piece, move.goal_position)
   end
 
   def get_move_from_input(moves)

@@ -1,11 +1,9 @@
-require "observer"
 require_relative "./tile"
 require_relative "./forsyth_edwards_notation"
 require_relative "./board_displayer"
 
 class Board
 
-  include Observable
   include BoardDisplayer
   include ForsythEdwardsNotation
 
@@ -165,6 +163,8 @@ class Board
       castle_move(piece, move)
     when move.class == PromotionMove
       promotion_move(piece, move)
+    when move.class == CaptureMove
+      capture_move(piece, move)
     else
       normal_move(piece, move)
     end
@@ -204,6 +204,13 @@ class Board
     normal_move(rook, move.rook_move)
   end
 
+  def capture_move(piece, move)
+    target_position = move.attacked_piece.position_coordinates
+    remove_piece(target_position)
+    normal_move(piece, move)
+  end
+
+
   def normal_move(piece, move)
     start_position = piece.position_coordinates
     start_tile = get_tile(start_position)
@@ -211,6 +218,20 @@ class Board
     new_tile = get_tile(move.goal_position)
     new_tile.set_piece(piece)
     piece.move(move)
+  end
+
+  def reset_passable_pawns(color)
+    @board.each do |rank|
+      rank.each do |tile|
+        begin
+          piece = get_piece(tile.position)
+          if piece.class == Pawn && piece.color != color
+            piece.make_unpassable
+          end
+        rescue => e
+        end
+      end
+    end
   end
 
   def position_occupied?(position_coordinate)
