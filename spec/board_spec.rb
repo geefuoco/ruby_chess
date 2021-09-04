@@ -115,6 +115,14 @@ describe Board do
 
       end
     end
+
+    context "when a pawn is about to promote and is attacking a king" do 
+      subject(:board) { Board.new }
+      it "should return true" do
+        board.convert_fen("rnb1kbnr/1pp2Ppp/p7/8/8/8/PPPQ1PPP/RNB1KBNR b KQkq - 0 5")
+        expect(board).to be_check
+      end
+    end
   end
 
   describe "#valid_piece_move?" do

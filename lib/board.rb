@@ -75,9 +75,12 @@ class Board
           piece = get_piece(tile.position)
           next if piece.class == King
           piece.get_legal_moves.any? do |mv|
-            mv.class == CaptureMove &&  
+            (mv.class == CaptureMove &&  
             mv.attacked_piece.class == King &&
-            mv.attacked_piece.color != piece.color
+            mv.attacked_piece.color != piece.color) ||
+            (mv.class == PromotionMove &&
+            get_piece(mv.goal_position).class == King &&
+            get_piece(mv.goal_position).color != piece.color)
           end
         rescue => e
         end 
@@ -96,6 +99,11 @@ class Board
                mv.attacked_piece.class == King &&
                mv.attacked_piece.color != piece.color
                return mv.attacked_piece
+            end
+            if mv.class == PromotionMove &&
+              get_piece(mv.goal_position).class == King &&
+              get_piece(mv.goal_position).color != piece.color
+              return get_piece(mv.goal_position)
             end
           end
         rescue => e
@@ -118,6 +126,11 @@ class Board
                mv.attacked_piece.color != piece.color
                attacking_king << piece
             end
+            if mv.class == PromotionMove &&
+              get_piece(mv.goal_position).class == King &&
+              get_piece(mv.goal_position).color != piece.color
+              attacking_king << piece
+            end
           end
         rescue => e
         end 
@@ -132,8 +145,10 @@ class Board
         begin 
           attack_piece = get_piece(tile.position)
           attack_piece.get_legal_moves.any? do |mv|
-            mv.class == CaptureMove && 
-            mv.attacked_piece == piece
+            (mv.class == CaptureMove && 
+            mv.attacked_piece == piece) ||
+            (mv.class == PromotionMove &&
+            get_piece(mv.goal_position) == piece)
           end
         rescue =>e
         end
