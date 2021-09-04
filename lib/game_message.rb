@@ -116,12 +116,40 @@ module GameMessage
     HEREDOC
   end
 
+  def display_fifty_move_draw
+    puts <<~HEREDOC
+    The game has been drawn due to the 50 move rule
+
+    GAMEOVER
+    HEREDOC
+  end
+
   def display_no_games_found
     puts <<~HEREDOC
     No games were found in the saved games folder.
 
     Starting new game...
     HEREDOC
+  end
+
+  def display_reptition_draw
+    puts <<~HEREDOC
+
+    The game has been drawn due to Threefold Repitition
+
+    GAMEOVER
+    HEREDOC
+  end
+
+  def display_saved_games
+    puts "Enter the number of the game to load"
+    index = 0
+    Dir.children("saved_games").each do |file|
+      next if file == "." || file == ".."
+      filename = "[#{index}] #{file}"
+      puts filename
+      index += 1
+    end
   end
 
 end
