@@ -71,7 +71,12 @@ module ForsythEdwardsNotation
           piece = self.get_piece(tile.position)
           if piece.class == Pawn
             if piece.passable
-              return coordinates[piece.position_coordinates]
+              if piece.color == "white"
+                position = [piece.position_coordinates[0]+1, piece.position_coordinates[1]]
+              else
+                position = [piece.position_coordinates[0]-1, piece.position_coordinates[1]]
+              end
+              return coordinates[position]
             end
           end
         rescue => exception
@@ -94,7 +99,7 @@ module ForsythEdwardsNotation
     full_moves = string_components[5]
     parse_piece_components(pieces)
     parse_castling(castling)
-    parse_en_passant(passable)
+    parse_en_passant(passable, player_to_move)
     hash = {player: parse_player_to_move(player_to_move),
             half_moves: half_moves,
             full_moves: full_moves}
@@ -207,10 +212,12 @@ module ForsythEdwardsNotation
     end
   end
 
-  def parse_en_passant(passable)
+  def parse_en_passant(passable, player_to_move)
     coordinates = self.generate_coordinate_map()
+    offset = player_to_move == "w" ? 1 : -1
     begin
-      piece = self.get_piece(coordinates[passable])
+      position = [passable[0]+offset, passable[1]]
+      piece = self.get_piece(coordinates[position])
       if piece.class == Pawn
         piece.instance_variable_set(:@passable, true)
       end

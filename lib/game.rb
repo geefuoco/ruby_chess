@@ -11,6 +11,7 @@ class Game
     @reversed = game_board.generate_coordinate_map().invert
     @full_moves = 1
     @half_moves = 0
+    @board_positions = {}
   end
 
   def start
@@ -18,8 +19,10 @@ class Game
     get_game()
     while !game_over?()
       @game_board.print_board
-      return display_stalemate if @game_board.stalemate?(@players.first)
-      return if @saved
+      return display_stalemate() if @game_board.stalemate?(@players.first)
+      return display_reptition_draw() if repition_draw?()
+      return display_fifty_move_draw() if fifty_move_draw?()
+      return if @save
       return display_resignation(@resign) if @resign
       game_turn()
     end
@@ -41,30 +44,45 @@ class Game
 
   def load
     if Dir.exist?("saved_games")
-      if Dir.empty?("saved_games")
-        display_no_games_found()
-        return new_game() 
-      end
-      puts "Enter the number of the game to load"
-      index = 0
-      Dir.children("saved_games").each do |file|
-        next if file == "." || file == ".."
-        filename = "[#{index}] #{file}"
-        puts filename
-        index += 1
-      end
-      input = gets.chomp
-      return load if !(/\d/ === input)
-      if Dir.children("saved_games")[input.to_i].nil?
-        puts "Please only select from the available options"
-        return load 
-      end
-      save_file = Dir.children("saved_games")[input.to_i]
-      File.open("saved_games/#{save_file}", "r") { |file| 
-        return load_game_from_fen(file.read)
-      }
+      return load_save_directory()
     end
     return new_game()
+  end
+
+  def load_save_directory
+    if Dir.empty?("saved_games")
+      display_no_games_found()
+      return new_game() 
+    end
+    display_saved_games()
+    read_save_file()
+  end
+
+  def read_save_file
+    input = gets.chomp
+    return load if !(/\d/ === input)
+    if Dir.children("saved_games")[input.to_i].nil?
+      puts "Please only select from the available options"
+      return load 
+    end
+    save_file = Dir.children("saved_games")[input.to_i]
+    load_file(save_file)
+  end
+
+  def load_file(save_file)
+    File.open("saved_games/#{save_file}", "r") { |file| 
+      return load_game_from_fen(file.read)
+    }
+  end
+
+  def load_game_from_fen(fen_string)
+    map = @game_board.convert_fen(fen_string)
+    puts map[:player] == @players.first
+    if !(map[:player] == @players.first)
+      swap_players()
+    end
+    @full_moves = map[:full_moves].to_i
+    @half_moves = map[:half_moves].to_i
   end
 
   def save
@@ -72,22 +90,12 @@ class Game
     if !Dir.exist?("saved_games")
       Dir.mkdir("saved_games")
     end
-    File.open("saved_games/game #{Dir.children("saved_games").length}", "w") do |file|
+    filename = "saved_games/game #{Dir.children("saved_games").length}"
+    File.open(filename, "w") do |file|
       player = @players.first
       file.write(@game_board.convert_to_fen(player, @half_moves, @full_moves))
     end
     return true
-  end
-
-  def load_game_from_fen(fen_string)
-    map = @game_board.convert_fen(fen_string)
-    puts map[:player] == @players.first
-    if !(map[:player] == @players.first)
-      puts "swapped"
-      swap_players()
-    end
-    @full_moves = map[:full_moves].to_i
-    @half_moves = map[:half_moves].to_i
   end
 
   def resign
@@ -99,11 +107,34 @@ class Game
     display_turn()
     display_check_warning() if @game_board.check?()
     legal_move = execute_player_move()
-    return game_turn() if legal_move.nil?
+    if legal_move.nil?
+      @game_board.print_board
+      return game_turn() 
+    end
     @game_board.reset_passable_pawns(@players.first)
     swap_players()
     increment_moves()
     puts `clear`
+    add_board_position()
+  end
+
+  def add_board_position
+    key = @game_board.convert_to_fen(@players.first, @half_moves, @full_moves)
+    components = key.split(" ")
+    pieces = components.first
+    if @board_positions.keys.include?(pieces)
+      @board_positions[pieces] += 1
+    else
+      @board_positions[pieces] = 1
+    end
+  end
+  
+  def repition_draw?
+    @board_positions.values.any? { |v| v > 2 }
+  end
+
+  def fifty_move_draw?
+    @half_moves/2 > 49
   end
 
   def execute_player_move
@@ -159,10 +190,10 @@ class Game
   end
 
   def process_half_moves(piece, move_object)
-    if piece == Pawn || move_object != CaptureMove
-      @half_moves += 1
-    else
+    if piece.class == Pawn || move_object.class == CaptureMove
       @half_moves = 0
+    else
+      @half_moves += 1
     end
   end
 
