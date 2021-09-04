@@ -107,7 +107,10 @@ class Game
     display_turn()
     display_check_warning() if @game_board.check?()
     legal_move = execute_player_move()
-    return game_turn() if legal_move.nil?
+    if legal_move.nil?
+      @game_board.print_board
+      return game_turn() 
+    end
     @game_board.reset_passable_pawns(@players.first)
     swap_players()
     increment_moves()
