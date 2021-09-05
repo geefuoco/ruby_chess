@@ -22,7 +22,7 @@ class Game
       return display_stalemate() if @game_board.stalemate?(@players.first)
       return display_reptition_draw() if repition_draw?()
       return display_fifty_move_draw() if fifty_move_draw?()
-      return if @save
+      return display_save_message()if @save
       return display_resignation(@resign) if @resign
       game_turn()
     end

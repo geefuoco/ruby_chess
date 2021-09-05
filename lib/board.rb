@@ -82,10 +82,16 @@ class Board
     old_position = piece_to_move.position_coordinates
     set_piece(piece_to_move, new_position)
     remove_piece(old_position)
-    is_check = check?()
+    valid_move = true
+    if check?()
+      king = get_checked_king()
+      if king.color == piece_to_move.color
+        valid_move = false
+      end
+    end
     revert_piece_positions(old_piece, new_position)
     set_piece(piece_to_move, old_position)
-    return !is_check
+    return valid_move
   end
 
   def revert_piece_positions(old_piece, new_position)

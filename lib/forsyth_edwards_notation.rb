@@ -64,27 +64,32 @@ module ForsythEdwardsNotation
   end
 
   def generate_en_passant_fen
-    coordinates = generate_coordinate_map
+    inverted = generate_coordinate_map.invert
     @board.each do |rank|
       rank.each do |tile|
         begin
           piece = self.get_piece(tile.position)
-          if piece.class == Pawn
-            if piece.passable
-              if piece.color == "white"
-                position = [piece.position_coordinates[0]+1, piece.position_coordinates[1]]
-              else
-                position = [piece.position_coordinates[0]-1, piece.position_coordinates[1]]
-              end
-              return coordinates[position]
-            end
+          if is_passable?(piece)
+            position = set_enpassant_target(piece)
+            return inverted[position]
           end
         rescue => exception
-          
         end
       end
     end
     return "-"
+  end
+
+  def is_passable?(piece)
+    return piece.class == Pawn && piece.passable
+  end
+
+  def set_enpassant_target(piece)
+    if piece.color == "white"
+      return [piece.position_coordinates[0]+1, piece.position_coordinates[1]]
+    else
+      return [piece.position_coordinates[0]-1, piece.position_coordinates[1]]
+    end
   end
 
   def convert_fen(fen_string)
@@ -214,10 +219,11 @@ module ForsythEdwardsNotation
 
   def parse_en_passant(passable, player_to_move)
     coordinates = self.generate_coordinate_map()
+    position_coordinates = coordinates[passable]
     offset = player_to_move == "w" ? 1 : -1
     begin
-      position = [passable[0]+offset, passable[1]]
-      piece = self.get_piece(coordinates[position])
+      position = [position_coordinates[0]+offset, position_coordinates[1]]
+      piece = self.get_piece(position)
       if piece.class == Pawn
         piece.instance_variable_set(:@passable, true)
       end

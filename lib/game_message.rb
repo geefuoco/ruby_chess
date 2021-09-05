@@ -141,6 +141,17 @@ module GameMessage
     HEREDOC
   end
 
+  def display_save_message
+    puts <<~HEREDOC
+
+    The game has been saved.
+
+
+    HEREDOC
+    .red
+  end
+
+
   def display_saved_games
     puts "Enter the number of the game to load"
     index = 0
