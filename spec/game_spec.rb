@@ -55,22 +55,6 @@ describe Game do
     end
   end
 
-  describe "#read_save_file" do
-
-    context "when the file is found"  do
-
-      before do
-        allow(Dir).to receive(:children).with("saved_games").and_return([])
-        allow(game).to receive(:gets).and_return("0")
-      end
-
-      it "should send a message to the Dir class" do
-        expect(Dir).to receive(:children).once
-        game.read_save_file
-      end
-
-    end
-  end
 
   describe "#load_file" do
 
