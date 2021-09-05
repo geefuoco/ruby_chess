@@ -2,7 +2,7 @@ An implementation of chess made entirely in ruby. Created using TDD.
 
 ![A demo of the Paul Morphy opera game](demo/paul_morphy_opera_game.gif)
 
-Try it here ~~>
+Try it here ~~> https://replit.com/@geefuoco/rubychess#
 
 This is actually my second attempt at this project. In my first attempt, it took me about a week and once I was finished, I was very displeased with how ugly the code looked.
 
