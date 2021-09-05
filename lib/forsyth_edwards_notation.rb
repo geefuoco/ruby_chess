@@ -219,11 +219,18 @@ module ForsythEdwardsNotation
 
   def parse_en_passant(passable, player_to_move)
     coordinates = self.generate_coordinate_map()
+<<<<<<< HEAD
     position_coordinates = coordinates[passable]
     offset = player_to_move == "w" ? 1 : -1
     begin
       position = [position_coordinates[0]+offset, position_coordinates[1]]
       piece = self.get_piece(position)
+=======
+    offset = player_to_move == "w" ? 1 : -1
+    begin
+      position = [passable[0]+offset, passable[1]]
+      piece = self.get_piece(coordinates[position])
+>>>>>>> 855fb517a40a10a0e92dfdf7047b0c0b83d419dc
       if piece.class == Pawn
         piece.instance_variable_set(:@passable, true)
       end
