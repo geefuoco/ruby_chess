@@ -1,6 +1,6 @@
 An implementation of chess made entirely in ruby. Created using TDD.
 
-!["A demo of the Paul Morphy opera game](./demo/paul_morpy_opera_game.gif)
+![A demo of the Paul Morphy opera game](demo/paul_morpy_opera_game.gif)
 
 Try it here ~~>
 
